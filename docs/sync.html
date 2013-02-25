@@ -7,15 +7,16 @@ with the JavaScript API interface of your choice.</p>
 
 <p>The basic idea:</p>
 
-<p>class MyAwesomeModel extends Backbone.Model
-     sync: Backbone.HookSync.make
-       create: myAwesomeCreator
-       update: 'create'
-       delete: 'default'
-       read: 
-         do: myAwesomeReader
-         build: (method, model, options) ->
-           model.attributes</p>
+<pre><code>class MyAwesomeModel extends Backbone.Model
+  sync: Backbone.HookSync.make
+    create: myAwesomeCreator
+    update: 'create'
+    delete: 'default'
+    read: 
+      do: myAwesomeReader
+      build: (method, model, options) -&gt;
+        model.attributes
+</code></pre>
 
 <p>The file also provides two functions to add a new sync method to
 your existing classes.</p>
@@ -68,7 +69,7 @@ with null</p>             </td>             <td class="code">               <div
       <span class="nv">handler = </span><span class="nx">handlers</span><span class="p">[</span><span class="nx">method</span><span class="p">]</span>
 
       <span class="k">if</span> <span class="nx">handler</span></pre></div>             </td>           </tr>                               <tr id="section-10">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>               <p>The handler can optionally include a build method
-which is used to construct the request.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="nv">request = </span><span class="nx">buildRequest</span> <span class="nx">handler</span>
+which is used to construct the request.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="nv">request = </span><span class="nx">buildRequest</span> <span class="nx">handler</span><span class="p">,</span> <span class="nx">method</span><span class="p">,</span> <span class="nx">model</span><span class="p">,</span> <span class="nx">options</span>
 
         <span class="nx">makeRequest</span> <span class="nx">handler</span><span class="p">,</span> <span class="nx">request</span>
 
@@ -80,7 +81,7 @@ we let the fall-through sync be passed in as an option.</p>
 previous sync in handlers.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="p">(</span><span class="nx">handlers</span><span class="p">.</span><span class="nx">sync</span> <span class="o">or</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">sync</span><span class="p">)</span> <span class="nx">method</span><span class="p">,</span> <span class="nx">model</span><span class="p">,</span> <span class="nx">options</span></pre></div>             </td>           </tr>                               <tr id="section-12">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-12">&#182;</a>               </div>               <p>In this context, a request is the object which will be passed
 into the <code>do</code> function passed in as a handler.  Based on the
 <code>expandArguments</code> property, it can either be a single object,
-or an array of arguments.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">buildRequest = </span><span class="nf">(handler) -&gt;</span>
+or an array of arguments.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">buildRequest = </span><span class="nf">(handler, method, model, options) -&gt;</span>
     <span class="k">if</span> <span class="nx">handler</span><span class="p">.</span><span class="nx">build</span><span class="o">?</span>
       <span class="nx">handler</span><span class="p">.</span><span class="nx">build</span> <span class="nx">method</span><span class="p">,</span> <span class="nx">model</span><span class="p">,</span> <span class="nx">options</span>
     <span class="k">else</span>
