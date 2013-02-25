@@ -16,4 +16,4 @@ The basic idea:
 
 ### More Details
 
-See the [Annotated Source](./sync.coffee)
+See the [Annotated Source](http://github.hubspot.com/Backbone.HookSync/docs/sync.html)
