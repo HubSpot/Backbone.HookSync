@@ -7,15 +7,15 @@
   #
   # The basic idea:
   #
-  #    class MyAwesomeModel extends Backbone.Model
-  #      sync: Backbone.HookSync.make
-  #        create: myAwesomeCreator
-  #        update: 'create'
-  #        delete: 'default'
-  #        read: 
-  #          do: myAwesomeReader
-  #          build: (method, model, options) ->
-  #            model.attributes
+  #     class MyAwesomeModel extends Backbone.Model
+  #       sync: Backbone.HookSync.make
+  #         create: myAwesomeCreator
+  #         update: 'create'
+  #         delete: 'default'
+  #         read: 
+  #           do: myAwesomeReader
+  #           build: (method, model, options) ->
+  #             model.attributes
   # 
   # The file also provides two functions to add a new sync method to
   # your existing classes.
