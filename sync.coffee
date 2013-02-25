@@ -91,7 +91,7 @@
       if handler
         # The handler can optionally include a build method
         # which is used to construct the request.
-        request = buildRequest handler
+        request = buildRequest handler, method, model, options
 
         makeRequest handler, request
 
@@ -108,7 +108,7 @@
   # into the `do` function passed in as a handler.  Based on the
   # `expandArguments` property, it can either be a single object,
   # or an array of arguments.
-  buildRequest = (handler) ->
+  buildRequest = (handler, method, model, options) ->
     if handler.build?
       handler.build method, model, options
     else
