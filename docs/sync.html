@@ -69,18 +69,21 @@ CRUD methods.</p>
 <li>An object</li>
 </ul>
 
-<p>If an object is used it can have the following attributes:
- - <code>function do</code> - The function to be called (make sure you use string notation ["do"] if
-          you're not writing CoffeeScript)
- - <code>function build(method, model, options)</code> - A function used to build the request passed
-          into do.  Defaults to <code>model.toJSON()</code>.
- - <code>boolean expandArguments[false]</code> - Should the array returned by <code>build</code> be
-          expanded and passed into do as seperate arguments?
- - <code>boolean returnsPromise[false]</code> - Does do return a Deferred object?  If so
-          it's done and fail methods will trigger the success and error
-          callbacks (and the default callbacks will be disabled).
- - <code>boolean addOptions[true]</code> - Should the options hash be merged in with
-          the return value of build?</p>
+<p>If an object is used it can have the following attributes:</p>
+
+<ul>
+<li><code>function do</code> - The function to be called (make sure you use string notation ["do"] if
+      you're not writing CoffeeScript)</li>
+<li><code>function build(method, model, options)</code> - A function used to build the request passed
+      into do.  Defaults to <code>model.toJSON()</code>.</li>
+<li><code>boolean expandArguments[false]</code> - Should the array returned by <code>build</code> be
+      expanded and passed into do as seperate arguments?</li>
+<li><code>boolean returnsPromise[false]</code> - Does do return a Deferred object?  If so
+      it's done and fail methods will trigger the success and error
+      callbacks (and the default callbacks will be disabled).</li>
+<li><code>boolean addOptions[true]</code> - Should the options hash be merged in with
+      the return value of build?</li>
+</ul>
 
 <p>If you're using expandArguments, addOptions: false is implied.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">CRUD = </span><span class="p">[</span><span class="s">&#39;create&#39;</span><span class="p">,</span> <span class="s">&#39;read&#39;</span><span class="p">,</span> <span class="s">&#39;update&#39;</span><span class="p">,</span> <span class="s">&#39;delete&#39;</span><span class="p">]</span>
 
