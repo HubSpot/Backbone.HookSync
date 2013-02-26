@@ -48,9 +48,12 @@
   #  - update
   #  - delete
   #
-  # And, optionally, a `sync` method which will be used with requests which
+  # Optionally, a `sync` method which will be used with requests which
   # do not match one of the provided methods (or for methods defined as
   # 'default').
+  #
+  # Optionally, a `defaults` object which provides defaults to the four
+  # CRUD methods.
   #
   # Each of the CRUD method keys can have any of the following values:
   #
@@ -60,22 +63,25 @@
   #  - An object
   #
   # If an object is used it can have the following attributes:
-  #
   #  - `function do` - The function to be called (make sure you use string notation ["do"] if
-  #    you're not writing CoffeeScript)
+  #           you're not writing CoffeeScript)
   #  - `function build(method, model, options)` - A function used to build the request passed
-  #    into do.
+  #           into do.  Defaults to `model.toJSON()`.
   #  - `boolean expandArguments[false]` - Should the array returned by `build` be
-  #    expanded and passed into do as seperate arguments?
+  #           expanded and passed into do as seperate arguments?
   #  - `boolean returnsPromise[false]` - Does do return a Deferred object?  If so
-  #    it's done and fail methods will trigger the success and error
-  #    callbacks (and the default callbacks will be disabled).
-  #  - `boolean noOptions[false]` - Should the options hash not be merged in with
-  #    the return value of build?
+  #           it's done and fail methods will trigger the success and error
+  #           callbacks (and the default callbacks will be disabled).
+  #  - `boolean addOptions[true]` - Should the options hash be merged in with
+  #           the return value of build?
   #
-  # If you're using expandArguments, noOptions is implied.
+  # If you're using expandArguments, addOptions: false is implied.
   # 
 
+  CRUD = ['create', 'read', 'update', 'delete']
+
+  HANDLER_DEFAULTS =
+    addOptions: true
 
   # Returns a copy of the class with sync extended by the handlers.
   wrap = (cls, handlers) ->
@@ -110,15 +116,20 @@
   make = (handlers) ->
     # Handlers is a map of CRUD methods to the functions which should
     # handle them + some other options.
-    # 
-    # Normalize the handler to always be an object with a 
-    # make method.
-    handlersToObjects handlers
 
     # Replace all of the string handler pointers with
     # the actual handlers they point to.  Replace 'default'
     # with null
     resolveHandlers handlers
+
+    # Normalize the handler to always be an object with a 
+    # make method.
+    handlersToObjects handlers
+
+    # `handlers.defaults` can contain default options for
+    # all of the handlers
+    applyDefaults handlers
+
 
     # This is the sync-replacement we'll be returning
     (method, model, options) ->
@@ -143,18 +154,19 @@
   # `expandArguments` property, it can either be a single object,
   # or an array of arguments.
   #
-  # Unless you set handler.noOptions, the options object will be
+  # Unless you set handler.addOptions to false, the options object will be
   # automatically merged with the attributes your return.
+  # 
+  # The build function defaults to `model.toJSON`.
   buildRequest = (handler, method, model, options) ->
-    if handler.build?
-      req = handler.build method, model, options
+    builder = handler.build ? model.toJSON
+    
+    req = builder method, model, options
 
-      unless handler.noOptions or handler.expandArguments
-        req = _.extend {}, options, req
+    if handler.addOptions and not handler.expandArguments
+      req = _.extend {}, options, req
 
-      req
-    else
-      options
+    req
       
   # Do it!
   # 
@@ -186,21 +198,26 @@
   # To make it easier, lets make them objects all of the time.
   #
   # It modifies the passed in object in-place.
-  #
-  # The conical shape of this function is critical to its
-  # success.
   handlersToObjects = (handlers) ->
-    for type, handler of handlers
+    for type, handler of handlers when type in CRUD
       if _.isFunction handler
-        handlers[handler] =
+        handlers[type] =
           do: handler
+
+  # Use handlers.defaults as the defaults for all of the other
+  # handlers.
+  #
+  # Modifies the passed-in object in-place.
+  applyDefaults = (handlers) ->
+    for type, handler of handlers when type in CRUD
+      handlers[type] = _.extend {}, HANDLER_DEFAULTS, handlers.defaults, handler
 
   # Handlers can be string references to the keys of other handlers,
   # or 'default'.
   #
   # Modifies the passed in object in-place.
   resolveHandlers = (handlers) ->
-    for type, handler of handlers
+    for type, handler of handlers when type in CRUD
       switch handler
         when 'default'
           # In this context, `default` means pass request through to
@@ -210,7 +227,7 @@
           # as we also support simply skipping the handler type to
           # signify 'default'
           handlers[type] = null
-        when 'create', 'read', 'update', 'delete'
+        when 'create', 'update', 'read', 'delete'
           # You can alias the handler to another handler.
           #
           # The most common usage of this is to map create to the same thing
