@@ -60,17 +60,18 @@
   #  - An object
   #
   # If an object is used it can have the following attributes:
+  #
   #  - `function do` - The function to be called (make sure you use string notation ["do"] if
-  #           you're not writing CoffeeScript)
+  #    you're not writing CoffeeScript)
   #  - `function build(method, model, options)` - A function used to build the request passed
-  #           into do.
+  #    into do.
   #  - `boolean expandArguments[false]` - Should the array returned by `build` be
-  #           expanded and passed into do as seperate arguments?
+  #    expanded and passed into do as seperate arguments?
   #  - `boolean returnsPromise[false]` - Does do return a Deferred object?  If so
-  #           it's done and fail methods will trigger the success and error
-  #           callbacks (and the default callbacks will be disabled).
+  #    it's done and fail methods will trigger the success and error
+  #    callbacks (and the default callbacks will be disabled).
   #  - `boolean noOptions[false]` - Should the options hash not be merged in with
-  #           the return value of build?
+  #    the return value of build?
   #
   # If you're using expandArguments, noOptions is implied.
   # 
