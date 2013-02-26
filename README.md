@@ -1,6 +1,6 @@
 ### Backbone.HookSync
 
-Get the CRUD out of your app.  Define functions for Backbone.Model Create, Read, Update and Delete.
+Get the CRUD out of your app.  Define functions for Backbone.Model create, read, update and delete.
  
 ```coffeescript
     class MyAwesomeModel extends Backbone.Model
