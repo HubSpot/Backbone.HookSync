@@ -63,6 +63,7 @@
   #  - An object
   #
   # If an object is used it can have the following attributes:
+  #
   #  - `function do` - The function to be called (make sure you use string notation ["do"] if
   #           you're not writing CoffeeScript)
   #  - `function build(method, model, options)` - A function used to build the request passed
@@ -98,12 +99,12 @@
   # Preserves a reference to the existing sync, so any method
   # not handled will fall through to the original.
   bind = (cls, handlers) ->
+    # make knows to look at handlers.sync if the sync method
+    # is not bound in the handlers (or is bound as 'default').
+    # 
+    # If there is no cls::sync (the default case for Backbone), 
+    # make will use Backbone.sync.
     if cls::sync
-      # make knows to look at handlers.sync if the sync method
-      # is not bound in the handlers (or is bound as 'default').
-      # 
-      # If there is no cls::sync (the default case for Backbone), 
-      # make will use Backbone.sync.
       handlers.sync ?= cls::sync
 
     cls::sync = make handlers
