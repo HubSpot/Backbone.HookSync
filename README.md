@@ -3,10 +3,9 @@
 Get the CRUD out of your app.  Define functions for Backbone.Model create, read, update and delete.
  
 ```coffeescript
-    class MyAwesomeModel extends Backbone.Model
-      sync: Backbone.HookSync.make
-        create: myAwesomeAPIsCreateMethod
-        
+class MyAwesomeModel extends Backbone.Model
+  sync: Backbone.HookSync.make
+    create: myAwesomeAPIsCreateMethod
 ```
 
 ### More Details
