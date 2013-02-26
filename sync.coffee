@@ -38,6 +38,42 @@
   #
   #     MoreAwesomeModel = Backbone.HookSync.wrap MyAwesomeModel,
   #       update: _.noop
+  #
+  # #### Options
+  #
+  # All three methods expect an object containing 1-4 of the CRUD methods:
+  #
+  #  - create
+  #  - read
+  #  - update
+  #  - delete
+  #
+  # And, optionally, a `sync` method which will be used with requests which
+  # do not match one of the provided methods (or for methods defined as
+  # 'default').
+  #
+  # Each of the CRUD method keys can have any of the following values:
+  #
+  #  - A function (to do the action)
+  #  - A string referring to another CRUD method who's value should be used
+  #  - 'default', `null`, or `undefined` representing the default sync behavior
+  #  - An object
+  #
+  # If an object is used it can have the following attributes:
+  #  - `function do` - The function to be called (make sure you use string notation ["do"] if
+  #           you're not writing CoffeeScript)
+  #  - `function build(method, model, options)` - A function used to build the request passed
+  #           into do.
+  #  - `boolean expandArguments[false]` - Should the array returned by `build` be
+  #           expanded and passed into do as seperate arguments?
+  #  - `boolean returnsPromise[false]` - Does do return a Deferred object?  If so
+  #           it's done and fail methods will trigger the success and error
+  #           callbacks (and the default callbacks will be disabled).
+  #  - `boolean noOptions[false]` - Should the options hash not be merged in with
+  #           the return value of build?
+  #
+  # If you're using expandArguments, noOptions is implied.
+  # 
 
 
   # Returns a copy of the class with sync extended by the handlers.
@@ -73,8 +109,7 @@
   make = (handlers) ->
     # Handlers is a map of CRUD methods to the functions which should
     # handle them + some other options.
-    #
-
+    # 
     # Normalize the handler to always be an object with a 
     # make method.
     handlersToObjects handlers
@@ -89,11 +124,9 @@
       handler = handlers[method]
 
       if handler
-        # The handler can optionally include a build method
-        # which is used to construct the request.
         request = buildRequest handler, method, model, options
 
-        makeRequest handler, request
+        makeRequest handler, request, options
 
       else
         # This method is most likely gonna be overriding the
@@ -108,22 +141,45 @@
   # into the `do` function passed in as a handler.  Based on the
   # `expandArguments` property, it can either be a single object,
   # or an array of arguments.
+  #
+  # Unless you set handler.noOptions, the options object will be
+  # automatically merged with the attributes your return.
   buildRequest = (handler, method, model, options) ->
     if handler.build?
-      handler.build method, model, options
+      req = handler.build method, model, options
+
+      unless handler.noOptions or handler.expandArguments
+        req = _.extend {}, options, req
+
+      req
     else
       options
       
   # Do it!
-  makeRequest = (handler, request) ->
-    # Adding `expandArguments` to your handler will let make
-    # know that you intend to pass an array of arguments to do,
-    # rather than a single object.
+  # 
+  # handler.returnsPromise gives you a convenient way to
+  # convert a method which normally returns a promise to
+  # work with Backbone's success and error handlers.
+  # 
+  # It will replace the passed-in success and error handlers
+  # with noops so they are not called twice.
+  makeRequest = (handler, request, options) ->
+    if handler.returnsPromise
+      oldOptions = _.pick options, 'success', 'error'
+      options.success = options.error = ->
+
     if handler.expandArguments
-      handler.do request...
+      resp = handler.do request...
     else
-      handler.do request
-      
+      resp = handler.do request
+     
+    if handler.returnsPromise
+      resp.done (data) ->
+        oldOptions.success data
+
+      resp.fail (err) ->
+        oldOptions.error err
+
   # Handler can be passed in as either functions, or
   # objects which have some more options and functions.
   # To make it easier, lets make them objects all of the time.
