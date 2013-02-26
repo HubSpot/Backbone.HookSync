@@ -53,9 +53,12 @@ MoreAwesomeModel = Backbone.HookSync.wrap MyAwesomeModel,
 <li>delete</li>
 </ul>
 
-<p>And, optionally, a <code>sync</code> method which will be used with requests which
+<p>Optionally, a <code>sync</code> method which will be used with requests which
 do not match one of the provided methods (or for methods defined as
 'default').</p>
+
+<p>Optionally, a <code>defaults</code> object which provides defaults to the four
+CRUD methods.</p>
 
 <p>Each of the CRUD method keys can have any of the following values:</p>
 
@@ -66,23 +69,23 @@ do not match one of the provided methods (or for methods defined as
 <li>An object</li>
 </ul>
 
-<p>If an object is used it can have the following attributes:</p>
+<p>If an object is used it can have the following attributes:
+ - <code>function do</code> - The function to be called (make sure you use string notation ["do"] if
+          you're not writing CoffeeScript)
+ - <code>function build(method, model, options)</code> - A function used to build the request passed
+          into do.  Defaults to <code>model.toJSON()</code>.
+ - <code>boolean expandArguments[false]</code> - Should the array returned by <code>build</code> be
+          expanded and passed into do as seperate arguments?
+ - <code>boolean returnsPromise[false]</code> - Does do return a Deferred object?  If so
+          it's done and fail methods will trigger the success and error
+          callbacks (and the default callbacks will be disabled).
+ - <code>boolean addOptions[true]</code> - Should the options hash be merged in with
+          the return value of build?</p>
 
-<ul>
-<li><code>function do</code> - The function to be called (make sure you use string notation ["do"] if
-you're not writing CoffeeScript)</li>
-<li><code>function build(method, model, options)</code> - A function used to build the request passed
-into do.</li>
-<li><code>boolean expandArguments[false]</code> - Should the array returned by <code>build</code> be
-expanded and passed into do as seperate arguments?</li>
-<li><code>boolean returnsPromise[false]</code> - Does do return a Deferred object?  If so
-it's done and fail methods will trigger the success and error
-callbacks (and the default callbacks will be disabled).</li>
-<li><code>boolean noOptions[false]</code> - Should the options hash not be merged in with
-the return value of build?</li>
-</ul>
+<p>If you're using expandArguments, addOptions: false is implied.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">CRUD = </span><span class="p">[</span><span class="s">&#39;create&#39;</span><span class="p">,</span> <span class="s">&#39;read&#39;</span><span class="p">,</span> <span class="s">&#39;update&#39;</span><span class="p">,</span> <span class="s">&#39;delete&#39;</span><span class="p">]</span>
 
-<p>If you're using expandArguments, noOptions is implied.</p>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>Returns a copy of the class with sync extended by the handlers.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">wrap = </span><span class="nf">(cls, handlers) -&gt;</span>
+  <span class="nv">HANDLER_DEFAULTS =</span>
+    <span class="nv">addOptions: </span><span class="kc">true</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>Returns a copy of the class with sync extended by the handlers.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">wrap = </span><span class="nf">(cls, handlers) -&gt;</span>
     <span class="nv">nCls = </span><span class="nx">cls</span>
     <span class="nv">nCls:: = </span><span class="nx">_</span><span class="p">.</span><span class="nx">clone</span> <span class="nv">cls::</span>
 
@@ -104,12 +107,11 @@ make will use Backbone.sync.</p>             </td>             <td class="code">
     <span class="nx">cls</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>Build a sync function compatable with Backbone out of one or more
 CRUD functions.  Anything you don't override will get passed through
 to the default sync function.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">make = </span><span class="nf">(handlers) -&gt;</span></pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <p>Handlers is a map of CRUD methods to the functions which should
-handle them + some other options.</p>
-
-<p>Normalize the handler to always be an object with a 
-make method.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">handlersToObjects</span> <span class="nx">handlers</span></pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <p>Replace all of the string handler pointers with
+handle them + some other options.</p>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <p>Replace all of the string handler pointers with
 the actual handlers they point to.  Replace 'default'
-with null</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">resolveHandlers</span> <span class="nx">handlers</span></pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <p>This is the sync-replacement we'll be returning</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nf">(method, model, options) -&gt;</span>
+with null</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">resolveHandlers</span> <span class="nx">handlers</span></pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <p>Normalize the handler to always be an object with a 
+make method.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">handlersToObjects</span> <span class="nx">handlers</span></pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <p><code>handlers.defaults</code> can contain default options for
+all of the handlers</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">applyDefaults</span> <span class="nx">handlers</span></pre></div>             </td>           </tr>                               <tr id="section-10">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>               <p>This is the sync-replacement we'll be returning</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nf">(method, model, options) -&gt;</span>
       <span class="nv">handler = </span><span class="nx">handlers</span><span class="p">[</span><span class="nx">method</span><span class="p">]</span>
 
       <span class="k">if</span> <span class="nx">handler</span>
@@ -117,28 +119,29 @@ with null</p>             </td>             <td class="code">               <div
 
         <span class="nx">makeRequest</span> <span class="nx">handler</span><span class="p">,</span> <span class="nx">request</span><span class="p">,</span> <span class="nx">options</span>
 
-      <span class="k">else</span></pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <p>This method is most likely gonna be overriding the
+      <span class="k">else</span></pre></div>             </td>           </tr>                               <tr id="section-11">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-11">&#182;</a>               </div>               <p>This method is most likely gonna be overriding the
 model's sync method, so calling @sync would recurse, so
 we let the fall-through sync be passed in as an option.</p>
 
 <p><code>wrap</code> and <code>bind</code> do this for you, automatically preserving the
-previous sync in handlers.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="p">(</span><span class="nx">handlers</span><span class="p">.</span><span class="nx">sync</span> <span class="o">or</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">sync</span><span class="p">)</span> <span class="nx">method</span><span class="p">,</span> <span class="nx">model</span><span class="p">,</span> <span class="nx">options</span></pre></div>             </td>           </tr>                               <tr id="section-10">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>               <p>In this context, a request is the object which will be passed
+previous sync in handlers.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="p">(</span><span class="nx">handlers</span><span class="p">.</span><span class="nx">sync</span> <span class="o">or</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">sync</span><span class="p">)</span> <span class="nx">method</span><span class="p">,</span> <span class="nx">model</span><span class="p">,</span> <span class="nx">options</span></pre></div>             </td>           </tr>                               <tr id="section-12">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-12">&#182;</a>               </div>               <p>In this context, a request is the object which will be passed
 into the <code>do</code> function passed in as a handler.  Based on the
 <code>expandArguments</code> property, it can either be a single object,
 or an array of arguments.</p>
 
-<p>Unless you set handler.noOptions, the options object will be
-automatically merged with the attributes your return.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">buildRequest = </span><span class="nf">(handler, method, model, options) -&gt;</span>
-    <span class="k">if</span> <span class="nx">handler</span><span class="p">.</span><span class="nx">build</span><span class="o">?</span>
-      <span class="nv">req = </span><span class="nx">handler</span><span class="p">.</span><span class="nx">build</span> <span class="nx">method</span><span class="p">,</span> <span class="nx">model</span><span class="p">,</span> <span class="nx">options</span>
+<p>Unless you set handler.addOptions to false, the options object will be
+automatically merged with the attributes your return.</p>
 
-      <span class="k">unless</span> <span class="nx">handler</span><span class="p">.</span><span class="nx">noOptions</span> <span class="o">or</span> <span class="nx">handler</span><span class="p">.</span><span class="nx">expandArguments</span>
-        <span class="nv">req = </span><span class="nx">_</span><span class="p">.</span><span class="nx">extend</span> <span class="p">{},</span> <span class="nx">options</span><span class="p">,</span> <span class="nx">req</span>
+<p>The build function defaults to <code>model.toJSON</code>.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">buildRequest = </span><span class="nf">(handler, method, model, options) -&gt;</span>
+    <span class="nv">builder = </span><span class="nx">handler</span><span class="p">.</span><span class="nx">build</span> <span class="o">?</span> <span class="nx">model</span><span class="p">.</span><span class="nx">toJSON</span>
+    
+    <span class="nv">req = </span><span class="nx">builder</span> <span class="nx">method</span><span class="p">,</span> <span class="nx">model</span><span class="p">,</span> <span class="nx">options</span>
 
-      <span class="nx">req</span>
-    <span class="k">else</span>
-      <span class="nx">options</span>
-      </pre></div>             </td>           </tr>                               <tr id="section-11">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-11">&#182;</a>               </div>               <p>Do it!</p>
+    <span class="k">if</span> <span class="nx">handler</span><span class="p">.</span><span class="nx">addOptions</span> <span class="o">and</span> <span class="o">not</span> <span class="nx">handler</span><span class="p">.</span><span class="nx">expandArguments</span>
+      <span class="nv">req = </span><span class="nx">_</span><span class="p">.</span><span class="nx">extend</span> <span class="p">{},</span> <span class="nx">options</span><span class="p">,</span> <span class="nx">req</span>
+
+    <span class="nx">req</span>
+      </pre></div>             </td>           </tr>                               <tr id="section-13">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-13">&#182;</a>               </div>               <p>Do it!</p>
 
 <p>handler.returnsPromise gives you a convenient way to
 convert a method which normally returns a promise to
@@ -160,30 +163,32 @@ with noops so they are not called twice.</p>             </td>             <td c
         <span class="nx">oldOptions</span><span class="p">.</span><span class="nx">success</span> <span class="nx">data</span>
 
       <span class="nx">resp</span><span class="p">.</span><span class="nx">fail</span> <span class="nf">(err) -&gt;</span>
-        <span class="nx">oldOptions</span><span class="p">.</span><span class="nx">error</span> <span class="nx">err</span></pre></div>             </td>           </tr>                               <tr id="section-12">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-12">&#182;</a>               </div>               <p>Handler can be passed in as either functions, or
+        <span class="nx">oldOptions</span><span class="p">.</span><span class="nx">error</span> <span class="nx">err</span></pre></div>             </td>           </tr>                               <tr id="section-14">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-14">&#182;</a>               </div>               <p>Handler can be passed in as either functions, or
 objects which have some more options and functions.
 To make it easier, lets make them objects all of the time.</p>
 
-<p>It modifies the passed in object in-place.</p>
-
-<p>The conical shape of this function is critical to its
-success.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">handlersToObjects = </span><span class="nf">(handlers) -&gt;</span>
-    <span class="k">for</span> <span class="nx">type</span><span class="p">,</span> <span class="nx">handler</span> <span class="k">of</span> <span class="nx">handlers</span>
+<p>It modifies the passed in object in-place.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">handlersToObjects = </span><span class="nf">(handlers) -&gt;</span>
+    <span class="k">for</span> <span class="nx">type</span><span class="p">,</span> <span class="nx">handler</span> <span class="k">of</span> <span class="nx">handlers</span> <span class="k">when</span> <span class="nx">type</span> <span class="k">in</span> <span class="nx">CRUD</span>
       <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isFunction</span> <span class="nx">handler</span>
-        <span class="nx">handlers</span><span class="p">[</span><span class="nx">handler</span><span class="p">]</span> <span class="o">=</span>
-          <span class="nv">do: </span><span class="nx">handler</span></pre></div>             </td>           </tr>                               <tr id="section-13">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-13">&#182;</a>               </div>               <p>Handlers can be string references to the keys of other handlers,
+        <span class="nx">handlers</span><span class="p">[</span><span class="nx">type</span><span class="p">]</span> <span class="o">=</span>
+          <span class="nv">do: </span><span class="nx">handler</span></pre></div>             </td>           </tr>                               <tr id="section-15">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-15">&#182;</a>               </div>               <p>Use handlers.defaults as the defaults for all of the other
+handlers.</p>
+
+<p>Modifies the passed-in object in-place.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">applyDefaults = </span><span class="nf">(handlers) -&gt;</span>
+    <span class="k">for</span> <span class="nx">type</span><span class="p">,</span> <span class="nx">handler</span> <span class="k">of</span> <span class="nx">handlers</span> <span class="k">when</span> <span class="nx">type</span> <span class="k">in</span> <span class="nx">CRUD</span>
+      <span class="nx">handlers</span><span class="p">[</span><span class="nx">type</span><span class="p">]</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span> <span class="p">{},</span> <span class="nx">HANDLER_DEFAULTS</span><span class="p">,</span> <span class="nx">handlers</span><span class="p">.</span><span class="nx">defaults</span><span class="p">,</span> <span class="nx">handler</span></pre></div>             </td>           </tr>                               <tr id="section-16">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-16">&#182;</a>               </div>               <p>Handlers can be string references to the keys of other handlers,
 or 'default'.</p>
 
 <p>Modifies the passed in object in-place.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">resolveHandlers = </span><span class="nf">(handlers) -&gt;</span>
-    <span class="k">for</span> <span class="nx">type</span><span class="p">,</span> <span class="nx">handler</span> <span class="k">of</span> <span class="nx">handlers</span>
+    <span class="k">for</span> <span class="nx">type</span><span class="p">,</span> <span class="nx">handler</span> <span class="k">of</span> <span class="nx">handlers</span> <span class="k">when</span> <span class="nx">type</span> <span class="k">in</span> <span class="nx">CRUD</span>
       <span class="k">switch</span> <span class="nx">handler</span>
-        <span class="k">when</span> <span class="s">&#39;default&#39;</span></pre></div>             </td>           </tr>                               <tr id="section-14">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-14">&#182;</a>               </div>               <p>In this context, <code>default</code> means pass request through to
+        <span class="k">when</span> <span class="s">&#39;default&#39;</span></pre></div>             </td>           </tr>                               <tr id="section-17">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-17">&#182;</a>               </div>               <p>In this context, <code>default</code> means pass request through to
 <code>handlers.sync</code> or <code>Backbone.sync</code>.</p>
 
 <p>For convenience, normalize default to be falsy
 as we also support simply skipping the handler type to
 signify 'default'</p>             </td>             <td class="code">               <div class="highlight"><pre>          <span class="nx">handlers</span><span class="p">[</span><span class="nx">type</span><span class="p">]</span> <span class="o">=</span> <span class="kc">null</span>
-        <span class="k">when</span> <span class="s">&#39;create&#39;</span><span class="p">,</span> <span class="s">&#39;read&#39;</span><span class="p">,</span> <span class="s">&#39;update&#39;</span><span class="p">,</span> <span class="s">&#39;delete&#39;</span></pre></div>             </td>           </tr>                               <tr id="section-15">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-15">&#182;</a>               </div>               <p>You can alias the handler to another handler.</p>
+        <span class="k">when</span> <span class="s">&#39;create&#39;</span><span class="p">,</span> <span class="s">&#39;update&#39;</span><span class="p">,</span> <span class="s">&#39;read&#39;</span><span class="p">,</span> <span class="s">&#39;delete&#39;</span></pre></div>             </td>           </tr>                               <tr id="section-18">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-18">&#182;</a>               </div>               <p>You can alias the handler to another handler.</p>
 
 <p>The most common usage of this is to map create to the same thing
 as update, e.g.:</p>
