@@ -1,17 +1,11 @@
 ### Backbone.HookSync
 
-The basic idea:
+Get the CRUD out of your app.  Define functions for Backbone.Model create, read, update and delete.
  
 ```coffeescript
-    class MyAwesomeModel extends Backbone.Model
-      sync: Backbone.HookSync.make
-        create: myAwesomeCreator
-        update: 'create'
-        delete: 'default'
-        read: 
-          do: myAwesomeReader
-          build: (method, model, options) ->
-            model.attributes
+class MyAwesomeModel extends Backbone.Model
+  sync: Backbone.HookSync.make
+    create: myAwesomeAPIsCreateMethod
 ```
 
 ### More Details
