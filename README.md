@@ -5,7 +5,7 @@ Get the CRUD out of your app.  Define functions for Backbone.Model create, read,
 ```coffeescript
     class MyAwesomeModel extends Backbone.Model
       sync: Backbone.HookSync.make
-        create: myAwesomeCreator
+        create: myAwesomeAPIsCreateMethod
         
 ```
 
