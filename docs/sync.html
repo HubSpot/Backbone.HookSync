@@ -98,12 +98,12 @@ CRUD methods.</p>
 method powered by the handlers.</p>
 
 <p>Preserves a reference to the existing sync, so any method
-not handled will fall through to the original.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">bind = </span><span class="nf">(cls, handlers) -&gt;</span>
-    <span class="k">if</span> <span class="nx">cls</span><span class="o">::</span><span class="nx">sync</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>make knows to look at handlers.sync if the sync method
+not handled will fall through to the original.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">bind = </span><span class="nf">(cls, handlers) -&gt;</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>make knows to look at handlers.sync if the sync method
 is not bound in the handlers (or is bound as 'default').</p>
 
 <p>If there is no cls::sync (the default case for Backbone), 
-make will use Backbone.sync.</p>             </td>             <td class="code">               <div class="highlight"><pre>      <span class="nx">handlers</span><span class="p">.</span><span class="nx">sync</span> <span class="o">?=</span> <span class="nx">cls</span><span class="o">::</span><span class="nx">sync</span>
+make will use Backbone.sync.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="k">if</span> <span class="nx">cls</span><span class="o">::</span><span class="nx">sync</span>
+      <span class="nx">handlers</span><span class="p">.</span><span class="nx">sync</span> <span class="o">?=</span> <span class="nx">cls</span><span class="o">::</span><span class="nx">sync</span>
 
     <span class="nv">cls::sync = </span><span class="nx">make</span> <span class="nx">handlers</span>
     
