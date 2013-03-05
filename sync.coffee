@@ -63,7 +63,6 @@
   #  - An object
   #
   # If an object is used it can have the following attributes:
-  #
   #  - `function do` - The function to be called (make sure you use string notation ["do"] if
   #           you're not writing CoffeeScript)
   #  - `function build(method, model, options)` - A function used to build the request passed
@@ -99,12 +98,12 @@
   # Preserves a reference to the existing sync, so any method
   # not handled will fall through to the original.
   bind = (cls, handlers) ->
-    # make knows to look at handlers.sync if the sync method
-    # is not bound in the handlers (or is bound as 'default').
-    # 
-    # If there is no cls::sync (the default case for Backbone), 
-    # make will use Backbone.sync.
     if cls::sync
+      # make knows to look at handlers.sync if the sync method
+      # is not bound in the handlers (or is bound as 'default').
+      # 
+      # If there is no cls::sync (the default case for Backbone), 
+      # make will use Backbone.sync.
       handlers.sync ?= cls::sync
 
     cls::sync = make handlers
@@ -139,7 +138,7 @@
       if handler
         request = buildRequest handler, method, model, options
 
-        makeRequest handler, request, options
+        makeRequest handler, request, model, options
 
       else
         # This method is most likely gonna be overriding the
@@ -162,7 +161,7 @@
   buildRequest = (handler, method, model, options) ->
     builder = handler.build ? model.toJSON
     
-    req = builder method, model, options
+    req = builder.call model, method, model, options
 
     if handler.addOptions and not handler.expandArguments
       req = _.extend {}, options, req
@@ -177,10 +176,10 @@
   # 
   # It will replace the passed-in success and error handlers
   # with noops so they are not called twice.
-  makeRequest = (handler, request, options) ->
+  makeRequest = (handler, request, model, options) ->
     if handler.returnsPromise
-      oldOptions = _.pick options, 'success', 'error'
-      options.success = options.error = ->
+      oldOptions = _.pick request, 'success', 'error'
+      request.success = request.error = ->
 
     if handler.expandArguments
       resp = handler.do request...
@@ -189,10 +188,21 @@
      
     if handler.returnsPromise
       resp.done (data) ->
-        oldOptions.success data
+        callSuccessCallback(model, data, options, oldOptions)
 
       resp.fail (err) ->
         oldOptions.error err
+
+  # After Backbone 0.9.2, the fetch success wrapper Backbone
+  # creates changed the arguments supplied by the callback.
+  #
+  # While this isn't ideal, it's nice to be backwards compatible
+  # to 0.9.2.
+  callSuccessCallback = (model, data, options, oldOptions) ->
+    if isBackboneVersionGreaterThan '0.9.2'
+      oldOptions.success model, data, options
+    else
+      oldOptions.success data
 
   # Handler can be passed in as either functions, or
   # objects which have some more options and functions.
@@ -241,6 +251,14 @@
           # This is only going to reliably work to one level of depth,
           # you can't reference references.
           handlers[type] = handlers[handler]
+
+  isBackboneVersionGreaterThan = (compare) ->
+    comparison = compare.split('.')
+    current = Backbone.VERSION.split('.')
+
+    parseInt(comparison[0]) < parseInt(current[0]) or 
+    parseInt(comparison[1]) < parseInt(current[1]) or 
+    parseInt(comparison[2]) < parseInt(current[2])
 
   exports = {make, wrap, bind}
   Backbone?.HookSync = exports
