@@ -189,9 +189,11 @@
     if handler.returnsPromise
       resp.done (data) ->
         callSuccessCallback(model, data, options, oldOptions)
+        model.trigger('sync', model, resp, options)
 
       resp.fail (err) ->
-        oldOptions.error err
+        oldOptions.error? err
+        model.trigger('error', err, model, options)
 
   # After Backbone 0.9.2, the fetch success wrapper Backbone
   # creates changed the arguments supplied by the callback.
@@ -200,9 +202,9 @@
   # to 0.9.2.
   callSuccessCallback = (model, data, options, oldOptions) ->
     if isBackboneVersionGreaterThan '0.9.2'
-      oldOptions.success model, data, options
+      oldOptions.success? model, data, options
     else
-      oldOptions.success data
+      oldOptions.success? data
 
   # Handler can be passed in as either functions, or
   # objects which have some more options and functions.
