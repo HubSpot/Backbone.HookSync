@@ -78,6 +78,9 @@
   # If you're using expandArguments, addOptions: false is implied.
   # 
 
+  if module? and require?
+    _ = require('underscore')
+
   CRUD = ['create', 'read', 'update', 'delete']
 
   HANDLER_DEFAULTS =
