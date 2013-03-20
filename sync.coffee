@@ -78,7 +78,7 @@
   # If you're using expandArguments, addOptions: false is implied.
   # 
 
-  if module? and require?
+  if module? and not window?.module?
     _ = require('underscore')
 
   CRUD = ['create', 'read', 'update', 'delete']
