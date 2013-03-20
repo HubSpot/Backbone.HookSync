@@ -244,3 +244,5 @@
 
   exports = {make, wrap, bind}
   Backbone?.HookSync = exports
+
+  module?.exports = exports
