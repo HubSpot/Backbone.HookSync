@@ -1,8 +1,9 @@
 {
   "name": "backbone-hooksync",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "main": "./sync",
   "dependencies": {
-    "backbone": ""
+    "backbone": "",
+    "underscore": ""
   }
 }

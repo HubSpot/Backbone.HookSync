@@ -80,6 +80,7 @@
 
   if module? and not window?.module?
     _ = require('underscore')
+    Backbone = require('backbone')
 
   CRUD = ['create', 'read', 'update', 'delete']
 
