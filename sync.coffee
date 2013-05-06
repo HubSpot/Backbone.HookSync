@@ -188,7 +188,7 @@
     if handler.expandArguments
       resp = handler.do request...
     else
-      resp = handler.do request
+      resp = handler.do request, model, options
      
     if handler.returnsPromise
       resp.done (data) ->
