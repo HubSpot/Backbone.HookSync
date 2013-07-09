@@ -205,7 +205,7 @@
   # While this isn't ideal, it's nice to be backwards compatible
   # to 0.9.2.
   callSuccessCallback = (model, data, options, oldOptions) ->
-    if isBackboneVersionGreaterThan '0.9.2'
+    if isBackboneVersionGreaterThan('0.9.2') and not isBackboneVersionGreaterThan('0.9.10')
       oldOptions.success? model, data, options
     else
       oldOptions.success? data
@@ -262,8 +262,8 @@
     comparison = compare.split('.')
     current = Backbone.VERSION.split('.')
 
-    parseInt(comparison[0]) < parseInt(current[0]) or 
-    parseInt(comparison[1]) < parseInt(current[1]) or 
+    parseInt(comparison[0]) < parseInt(current[0]) or
+    parseInt(comparison[1]) < parseInt(current[1]) or
     parseInt(comparison[2]) < parseInt(current[2])
 
   exports = {make, wrap, bind}
